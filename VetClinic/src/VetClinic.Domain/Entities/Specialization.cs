@@ -1,6 +1,6 @@
 using VetClinic.Domain.Enums;
 
-namespace VetClinic.Domain.Enteties;
+namespace VetClinic.Domain.Entities;
 
 public class Specialization
 {

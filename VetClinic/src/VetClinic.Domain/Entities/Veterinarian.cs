@@ -1,4 +1,4 @@
-namespace VetClinic.Domain.Enteties;
+namespace VetClinic.Domain.Entities;
 
 public class Veterinarian{
     public int Id { get; set; }
