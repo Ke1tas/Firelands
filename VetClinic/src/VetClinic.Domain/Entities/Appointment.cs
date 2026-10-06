@@ -1,14 +1,47 @@
 namespace VetClinic.Domain.Entities;
 
-public class Appointment{
+/// <summary>
+/// Запись на прием к ветеринару
+/// </summary>
+public class Appointment
+{
+    /// <summary>
+    /// Уникальный идентификатор записи на прием
+    /// </summary>
     public int Id { get; set; }
+
+    /// <summary>
+    /// Дата и время проведения приема
+    /// </summary>
     public DateTime DateTime { get; set; }
+
+    /// <summary>
+    /// Номер кабинета
+    /// </summary>
     public int RoomNumber { get; set; }
+
+    /// <summary>
+    /// Флаг, указывающий, является ли прием повторным
+    /// </summary>
     public bool IsFollowUp { get; set; }
 
+    /// <summary>
+    /// Идентификатор питомца
+    /// </summary>
     public int PetId { get; set; }
-    public Pet Pet { get; set; } = null!;
 
+    /// <summary>
+    /// Питомец
+    /// </summary>
+    public Pet? Pet { get; set; }
+
+    /// <summary>
+    /// Идентификатор ветеринара
+    /// </summary>
     public int VeterinarianId { get; set; }
-    public Veterinarian Veterinarian { get; set; } = null!;
+
+    /// <summary>
+    /// ветеринар
+    /// </summary>
+    public Veterinarian? Veterinarian { get; set; }
 }

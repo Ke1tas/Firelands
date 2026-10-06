@@ -2,19 +2,58 @@ using VetClinic.Domain.Enums;
 
 namespace VetClinic.Domain.Entities;
 
-public class Pet{
+/// <summary>
+/// Питомец
+/// </summary>
+public class Pet
+{
+    /// <summary>
+    /// Уникальный идентификатор питомца
+    /// </summary>
     public int Id { get; set; }
-    public string Name { get; set; } = string.Empty;
-    public AnimalSpecies Species { get; set; }
-    
-    public int BreedId { get; set; }
-    public Breed Breed { get; set; } = null!;
 
+    /// <summary>
+    /// Кличка животного
+    /// </summary>
+    public required string Name { get; set; }
+
+    /// <summary>
+    /// Биологический вид животного
+    /// </summary>
+    public AnimalSpecies Species { get; set; }
+
+    /// <summary>
+    /// Идентификатор породы
+    /// </summary>
+    public int BreedId { get; set; }
+
+    /// <summary>
+    /// Порода
+    /// </summary>
+    public Breed? Breed { get; set; }
+
+    /// <summary>
+    /// Дата рождения питомца
+    /// </summary>
     public DateOnly BirthDate { get; set; }
+
+    /// <summary>
+    /// Вес питомца в килограммах
+    /// </summary>
     public decimal WeightKg { get; set; }
 
+    /// <summary>
+    /// Идентификатор владельца
+    /// </summary>
     public int OwnerId { get; set; }
-    public Owner Owner { get; set; } = null!;
 
+    /// <summary>
+    /// Владельец
+    /// </summary>
+    public Owner? Owner { get; set; }
+
+    /// <summary>
+    /// Список записей на прием для данного питомца
+    /// </summary>
     public List<Appointment> Appointments { get; set; } = [];
 }

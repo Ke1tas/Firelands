@@ -1,15 +1,47 @@
 namespace VetClinic.Domain.Entities;
 
-public class Veterinarian{
+/// <summary>
+/// Ветеринар
+/// </summary>
+public class Veterinarian
+{
+    /// <summary>
+    /// Уникальный идентификатор врача
+    /// </summary>
     public int Id { get; set; }
-    public string PassportNumber { get; set; } = string.Empty;
-    public string FullName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Серия и номер паспорта врача
+    /// </summary>
+    public required string PassportNumber { get; set; }
+
+    /// <summary>
+    /// Фамилия, имя и отчество врача
+    /// </summary>
+    public required string FullName { get; set; }
+
+    /// <summary>
+    /// Год рождения врача
+    /// </summary>
     public int BirthYear { get; set; }
 
+    /// <summary>
+    /// Идентификатор специализации врача
+    /// </summary>
     public int SpecializationId { get; set; }
-    public Specialization Specialization { get; set; } = null!;
 
+    /// <summary>
+    /// Специализация врача
+    /// </summary>
+    public Specialization? Specialization { get; set; }
+
+    /// <summary>
+    /// Стаж работы в годах
+    /// </summary>
     public int ExperienceYears { get; set; }
 
+    /// <summary>
+    /// Список приемов, закрепленных за данным врачом
+    /// </summary>
     public List<Appointment> Appointments { get; set; } = [];
 }

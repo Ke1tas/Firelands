@@ -2,8 +2,23 @@ using VetClinic.Domain.Enums;
 
 namespace VetClinic.Domain.Entities;
 
-public class Breed{
+/// <summary>
+/// Порода животного
+/// </summary>
+public class Breed
+{
+    /// <summary>
+    /// Уникальный идентификатор породы
+    /// </summary>
     public int Id { get; set; }
-    public string Name { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Название породы
+    /// </summary>
+    public required string Name { get; set; }
+
+    /// <summary>
+    /// Биологический вид животного, к которому относится порода
+    /// </summary>
     public AnimalSpecies Species { get; set; }
 }
