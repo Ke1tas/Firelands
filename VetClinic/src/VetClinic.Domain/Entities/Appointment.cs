@@ -41,7 +41,7 @@ public class Appointment
     public int VeterinarianId { get; set; }
 
     /// <summary>
-    /// ветеринар
+    /// Ветеринар
     /// </summary>
     public Veterinarian? Veterinarian { get; set; }
 }

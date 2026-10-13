@@ -14,7 +14,7 @@ public class VetClinicServiceTests
     private readonly IVetClinicService _service;
 
     /// <summary>
-    /// Инициализация сервиса с фиксированными тестовыми данными
+    /// Инициализация сервиса с фиксированными тестовыми данными.
     /// </summary>
     public VetClinicServiceTests()
     {
@@ -33,13 +33,25 @@ public class VetClinicServiceTests
     [Fact]
     public void GetVeterinariansBySpecies_ReturnsExactVeterinariansForCatSpecies()
     {
-        var result = _service.GetVeterinariansBySpecies(AnimalSpecies.Cat).ToList();
+        // Arrange
+        const AnimalSpecies targetSpecies = AnimalSpecies.Cat;
+        const int expectedCount = 3;
+        var expectedVeterinarianNames = new HashSet<string>
+        {
+            "Смирнов Андрей Викторович",
+            "Кузнецова Анна Павловна",
+            "Морозов Игорь Сергеевич"
+        };
 
-        Assert.Equal(3, result.Count);
-        Assert.Contains(result, v => v.FullName == "Смирнов Андрей Викторович");
-        Assert.Contains(result, v => v.FullName == "Кузнецова Анна Павловна");
-        Assert.Contains(result, v => v.FullName == "Морозов Игорь Сергеевич");
-        Assert.All(result, v => Assert.Equal(AnimalSpecies.Cat, v.Specialization?.TargetSpecies));
+        // Act
+        var result = _service.GetVeterinariansBySpecies(targetSpecies).ToList();
+
+        // Assert
+        Assert.Equal(expectedCount, result.Count);
+        var actualNames = result.Select(v => v.FullName).ToHashSet();
+        Assert.Equal(expectedVeterinarianNames, actualNames);
+        Assert.All(result, v =>
+            Assert.Equal(targetSpecies, v.Specialization?.TargetSpecies));
     }
 
     /// <summary>
@@ -49,15 +61,18 @@ public class VetClinicServiceTests
     [Fact]
     public void GetPetsByDoctorOrderedByName_ReturnsUniquePetsSortedAlphabetically()
     {
+        // Arrange
         const int doctorId = 4;
+        const int expectedCount = 2;
+        var expectedPetNames = new List<string> { "Рекс", "Шарик" };
 
+        // Act
         var result = _service.GetPetsByDoctorOrderedByName(doctorId).ToList();
 
-        Assert.Equal(2, result.Count);
-        Assert.Collection(result,
-            pet1 => Assert.Equal("Рекс", pet1.Name),
-            pet2 => Assert.Equal("Шарик", pet2.Name)
-        );
+        // Assert
+        Assert.Equal(expectedCount, result.Count);
+        var actualPetNames = result.Select(p => p.Name).ToList();
+        Assert.Equal(expectedPetNames, actualPetNames);
     }
 
     /// <summary>
@@ -67,11 +82,15 @@ public class VetClinicServiceTests
     [Fact]
     public void GetFollowUpAppointmentsCountByBreed_ReturnsExactCountOfFollowUps()
     {
+        // Arrange
         const int labradorBreedId = 1;
+        const int expectedFollowUpCount = 2;
 
+        // Act
         var actualCount = _service.GetFollowUpAppointmentsCountByBreed(labradorBreedId);
 
-        Assert.Equal(2, actualCount);
+        // Assert
+        Assert.Equal(expectedFollowUpCount, actualCount);
     }
 
     /// <summary>
@@ -82,13 +101,22 @@ public class VetClinicServiceTests
     [Fact]
     public void GetOwnersWithMultiplePetsOrderedByName_ReturnsFilteredAndAlphabeticallySortedOwners()
     {
+        // Arrange
+        const int expectedCount = 2;
+        var expectedOwnerNames = new List<string>
+        {
+            "Иванов Иван Иванович",
+            "Петров Петр Петрович"
+        };
+
+        // Act
         var result = _service.GetOwnersWithMultiplePetsOrderedByName().ToList();
 
-        Assert.Equal(2, result.Count);
-        Assert.Collection(result,
-            owner1 => Assert.Equal("Иванов Иван Иванович", owner1.FullName),
-            owner2 => Assert.Equal("Петров Петр Петрович", owner2.FullName)
-        );
+        // Assert
+        Assert.Equal(expectedCount, result.Count);
+        var actualOwnerNames = result.Select(o => o.FullName).ToList();
+        Assert.Equal(expectedOwnerNames, actualOwnerNames);
+        Assert.All(result, o => Assert.True(o.Pets.Count > 1));
     }
 
     /// <summary>
@@ -99,17 +127,24 @@ public class VetClinicServiceTests
     [Fact]
     public void GetCurrentMonthAppointmentsByRoom_ReturnsOnlyAppointmentsForSpecifiedMonthAndRoom()
     {
+        // Arrange
         const int targetRoom = 101;
-        var septemberDate = new DateTime(2026, 9, 1);
+        var testDate = new DateTime(2026, 9, 1);
+        const int expectedCount = 3;
+        var expectedAppointmentIds = new HashSet<int> { 1, 2, 3 };
 
-        var result = _service.GetCurrentMonthAppointmentsByRoom(targetRoom, septemberDate).ToList();
+        // Act
+        var result = _service.GetCurrentMonthAppointmentsByRoom(targetRoom, testDate).ToList();
 
-        Assert.Equal(3, result.Count);
+        // Assert
+        Assert.Equal(expectedCount, result.Count);
+        var actualAppointmentIds = result.Select(a => a.Id).ToHashSet();
+        Assert.Equal(expectedAppointmentIds, actualAppointmentIds);
         Assert.All(result, a =>
         {
             Assert.Equal(targetRoom, a.RoomNumber);
-            Assert.Equal(2026, a.DateTime.Year);
-            Assert.Equal(9, a.DateTime.Month);
+            Assert.Equal(testDate.Year, a.DateTime.Year);
+            Assert.Equal(testDate.Month, a.DateTime.Month);
         });
     }
 }
