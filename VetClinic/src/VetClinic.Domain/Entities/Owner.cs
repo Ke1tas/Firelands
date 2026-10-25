@@ -1,9 +1,11 @@
+using VetClinic.Domain.Interfaces;
+
 namespace VetClinic.Domain.Entities;
 
 /// <summary>
 /// Владелец животного
 /// </summary>
-public class Owner
+public class Owner : IEntity
 {
     /// <summary>
     /// Уникальный идентификатор владельца

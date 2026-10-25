@@ -1,9 +1,12 @@
+using VetClinic.Domain.Interfaces;
+
 namespace VetClinic.Domain.Entities;
+
 
 /// <summary>
 /// Ветеринар
 /// </summary>
-public class Veterinarian
+public class Veterinarian : IEntity
 {
     /// <summary>
     /// Уникальный идентификатор врача

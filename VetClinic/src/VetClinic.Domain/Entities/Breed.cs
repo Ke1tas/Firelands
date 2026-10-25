@@ -1,11 +1,12 @@
 using VetClinic.Domain.Enums;
+using VetClinic.Domain.Interfaces;
 
 namespace VetClinic.Domain.Entities;
 
 /// <summary>
 /// Порода животного
 /// </summary>
-public class Breed
+public class Breed : IEntity
 {
     /// <summary>
     /// Уникальный идентификатор породы

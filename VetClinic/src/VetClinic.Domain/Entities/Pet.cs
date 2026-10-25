@@ -1,11 +1,12 @@
 using VetClinic.Domain.Enums;
+using VetClinic.Domain.Interfaces;
 
 namespace VetClinic.Domain.Entities;
 
 /// <summary>
 /// Питомец
 /// </summary>
-public class Pet
+public class Pet : IEntity
 {
     /// <summary>
     /// Уникальный идентификатор питомца

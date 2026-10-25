@@ -1,11 +1,12 @@
 using VetClinic.Domain.Enums;
+using VetClinic.Domain.Interfaces;
 
 namespace VetClinic.Domain.Entities;
 
 /// <summary>
 /// Специализация ветеринарного врача
 /// </summary>
-public class Specialization
+public class Specialization : IEntity
 {
     /// <summary>
     /// Уникальный идентификатор специализации

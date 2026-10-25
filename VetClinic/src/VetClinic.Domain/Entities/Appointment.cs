@@ -1,9 +1,11 @@
+using VetClinic.Domain.Interfaces;
+
 namespace VetClinic.Domain.Entities;
 
 /// <summary>
 /// Запись на прием к ветеринару
 /// </summary>
-public class Appointment
+public class Appointment : IEntity
 {
     /// <summary>
     /// Уникальный идентификатор записи на прием
