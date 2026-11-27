@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using VetClinic.Application.Dto;
 using VetClinic.Application.Mapping;
 using VetClinic.Domain.Entities;
+using VetClinic.Domain.Exceptions;
 using VetClinic.Domain.Enums;
 using VetClinic.Domain.Interfaces;
 
@@ -170,6 +171,7 @@ public class VeterinariansController(
     [HttpDelete("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Delete(int id)
     {
@@ -177,6 +179,10 @@ public class VeterinariansController(
         {
             var deleted = await repository.DeleteAsync(id);
             return deleted ? NoContent() : NotFound();
+        }
+        catch (EntityInUseException ex)
+        {
+            return Conflict(ex.Message);
         }
         catch (Exception ex)
         {

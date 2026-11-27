@@ -1,8 +1,9 @@
+using Microsoft.EntityFrameworkCore;
 using VetClinic.Application.Services;
 using VetClinic.Domain.Entities;
 using VetClinic.Domain.Interfaces;
-using VetClinic.Infrastructure.InMemory.Repositories;
-using VetClinic.Infrastructure.InMemory.Seeding;
+using VetClinic.Infrastructure.PostgreSql;
+using VetClinic.Infrastructure.PostgreSql.Repositories;
 
 namespace VetClinic.WebApi.Extensions;
 
@@ -12,20 +13,41 @@ namespace VetClinic.WebApi.Extensions;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Регистрация репозиториев для хранения данных в памяти
+    /// Регистрация контекста и репозиториев PostgreSQL
     /// </summary>
-    public static IServiceCollection AddInMemoryRepositories(this IServiceCollection services)
+    public static IServiceCollection AddPostgreSqlRepositories(
+        this IServiceCollection services,
+        IConfiguration configuration)
     {
-        var seeder = new ClinicDataSeeder();
+        var connectionString = configuration.GetConnectionString("vetclinic")
+            ?? throw new InvalidOperationException(
+                "Строка подключения 'vetclinic' не задана. Запустите VetClinic.AppHost.");
 
-        services.AddSingleton<IRepository<Breed>>(_ => new InMemoryRepository<Breed>(seeder.Breeds));
-        services.AddSingleton<IRepository<Specialization>>(_ => new InMemoryRepository<Specialization>(seeder.Specializations));
-        services.AddSingleton<IRepository<Owner>>(_ => new InMemoryRepository<Owner>(seeder.Owners));
-        services.AddSingleton<IRepository<Pet>>(_ => new InMemoryRepository<Pet>(seeder.Pets));
-        services.AddSingleton<IRepository<Veterinarian>>(_ => new InMemoryRepository<Veterinarian>(seeder.Veterinarians));
-        services.AddSingleton<IRepository<Appointment>>(_ => new InMemoryRepository<Appointment>(seeder.Appointments));
+        services.AddDbContext<VetClinicDbContext>(options => options.UseNpgsql(connectionString));
+
+        services.AddEfRepository<Breed>(db => db.Breeds);
+        services.AddEfRepository<Specialization>(db => db.Specializations);
+        services.AddEfRepository<Owner>(db => db.Owners.Include(owner => owner.Pets));
+        services.AddEfRepository<Pet>(db => db.Pets.Include(pet => pet.Breed).Include(pet => pet.Owner));
+        services.AddEfRepository<Veterinarian>(db => db.Veterinarians.Include(vet => vet.Specialization));
+        services.AddEfRepository<Appointment>(db => db.Appointments
+            .Include(appointment => appointment.Pet).ThenInclude(pet => pet!.Breed)
+            .Include(appointment => appointment.Pet).ThenInclude(pet => pet!.Owner)
+            .Include(appointment => appointment.Veterinarian));
 
         return services;
+    }
+
+    private static void AddEfRepository<T>(
+        this IServiceCollection services,
+        Func<VetClinicDbContext, IQueryable<T>> query)
+        where T : class, IEntity
+    {
+        services.AddScoped<IRepository<T>>(provider =>
+        {
+            var db = provider.GetRequiredService<VetClinicDbContext>();
+            return new EfRepository<T>(db, query(db));
+        });
     }
 
     /// <summary>

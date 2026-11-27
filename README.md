@@ -1,5 +1,44 @@
 # Разработка корпоративных приложений
 
+## Лабораторная работа №3 — ORM
+
+Web API хранит данные в PostgreSQL через EF Core. Проект `VetClinic.Infrastructure.PostgreSql` содержит контекст, репозиторий и две миграции. `InitialCreate` создаёт шесть таблиц и внешние ключи, `SeedClinicData` загружает 62 демонстрационные записи из лабораторной №2. При запуске API применяет ожидающие миграции до обработки запросов.
+
+Удаление записи, на которую ссылаются другие записи, возвращает HTTP 409. Например, перед удалением питомца нужно удалить его приёмы. Дата и время приёма хранятся по местному календарю клиники и передаются в формате `2026-09-10T10:00:00`.
+
+### Запуск
+
+Понадобятся .NET SDK 10 и запущенный Docker с поддержкой Linux-контейнеров. На Windows запустите [Docker Desktop](https://docs.docker.com/desktop/setup/install/windows-install/). Проверьте командой `docker info --format '{{.OSType}}'`, что Docker отвечает и выводит `linux`. Из корня репозитория выполните:
+
+```powershell
+dotnet dev-certs https --trust
+dotnet run --project VetClinic/src/VetClinic.AppHost
+```
+
+Первую команду достаточно выполнить один раз для локального сертификата панели Aspire. Для входа в панель откройте полную ссылку из строки `Login to the dashboard at` в терминале. В неё уже включён токен. В панели будут видны ресурсы `postgres`, `vetclinic` и `webapi`. После запуска `webapi` откройте [Swagger](http://localhost:5163/swagger).
+
+Если Aspire выводит `Container runtime 'docker' could not be found`, проверьте `Get-Command docker` **в том же окне PowerShell**, из которого запускаете AppHost. Если команда не находит Docker после установки, полностью закройте и заново откройте терминал или IDE. Для установки Docker Desktop на одного пользователя можно также добавить его путь в текущий сеанс PowerShell:
+
+```powershell
+$dockerBin = Join-Path $env:LOCALAPPDATA 'Programs\DockerDesktop\resources\bin'
+$env:Path = "$dockerBin;$env:Path"
+```
+
+Если команда `docker` распознаётся, но не может подключиться к движку, запустите Docker Desktop и дождитесь его готовности. Затем перезапустите AppHost.
+
+### Проверка
+
+1. Выполните `GET /api/Breeds`. На чистой базе в ответе будет 12 пород.
+2. Выполните `GET /api/Owners/multiple-pets`. В ответе будут Иванов и Петров, у каждого по два питомца.
+3. Создайте породу через `POST /api/Breeds`, например с телом `{"name":"Такса","species":2}`. Запомните ID из ответа `201 Created`.
+4. Остановите AppHost через Ctrl+C и запустите снова. `GET /api/Breeds/{id}` должен вернуть созданную породу. PostgreSQL хранит данные в Docker-томе между запусками.
+
+Существующие unit-тесты используют in-memory репозитории. Их можно запустить без Docker:
+
+```powershell
+dotnet test VetClinic/VetClinic.slnx
+```
+
 ## Лабораторная работа №2: «Сервер»
 **Тема:** Реализация серверного приложения с использованием REST API  
 **Вариант:** №44 — «Ветеринарная клиника»
@@ -37,21 +76,6 @@
    * `GET /api/Owners/multiple-pets` — выборка владельцев с несколькими питомцами с сортировкой по ФИО
    * `GET /api/Appointments/by-room` — выборка приемов за указанный месяц в заданном кабинете
 6. Подключена и настроена интерактивная документация Swagger UI
-
----
-
-### Запуск приложения и тестов
-
-Запуск веб-сервера:
-```bash
-dotnet run --project src/VetClinic.WebApi
-```
-Документация Swagger доступна по адресу [Текст ссылки](http://localhost:5163/swagger)
-
-Запуск юнит-тестов:
-```bash
-dotnet test
-```
 
 ---
 
