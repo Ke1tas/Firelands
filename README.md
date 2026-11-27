@@ -30,6 +30,6 @@ dotnet run --project VetClinic/src/VetClinic.AppHost
 ### Результаты работы PostgraceSQL
 
 ![Image](docs/sql_нашел_таксу_после_перезапуска.png)
-![Image](docs/docs\sql_создал_таксу.png)
+![Image](docs/sql_создал_таксу.png)
 
 ---
